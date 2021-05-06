@@ -6,7 +6,7 @@
     <AssemblyTitle>Linq2DynamoDb.DataContext</AssemblyTitle>
     <VersionPrefix>2.4.0</VersionPrefix>
     <Authors>linq2dynamodb</Authors>
-    <TargetFrameworks>net461;netstandard1.6</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Linq2DynamoDb.DataContext</AssemblyName>
     <PackageId>Linq2DynamoDb.DataContext</PackageId>
     <PackageTags>Linq2DynamoDb;AWS;DynamoDb;context;caching;LINQ;.Net</PackageTags>
@@ -14,8 +14,6 @@
     <PackageIconUrl>https://secure.gravatar.com/avatar/83392a88365261125361fa6ec95a3294</PackageIconUrl>
     <PackageProjectUrl>https://github.com/scale-tone/linq2dynamodb/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/scale-tone/linq2dynamodb/</RepositoryUrl>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -27,17 +25,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.2.1" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.0.17" />
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

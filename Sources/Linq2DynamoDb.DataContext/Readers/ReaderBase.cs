@@ -18,16 +18,6 @@ namespace Linq2DynamoDb.DataContext
             this.Table = table;
             this.ProjectionFunc = projectionFunc;
 
-#if !NETSTANDARD1_6
-            // choosing a wrapper for the entity depending on whether it's inherited from EntityBase
-            if (typeof (EntityBase).IsAssignableFrom(this.EntityType))
-            {
-                // then using a TransparentProxy
-                this._entityWrapperCreator = doc => new EntityProxy(doc, this.EntityType, this.Table.KeyNames);
-                return;
-            }
-#endif
-            // unobtrusive mode - using EntityWrapper
             this._entityWrapperCreator = doc => new EntityWrapper(doc, this.EntityType, this.Table.ToDocumentConversionFunctor, this.Table.EntityKeyGetter);
         }
 
