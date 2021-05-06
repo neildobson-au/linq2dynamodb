@@ -16,20 +16,23 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers {
         private static readonly DynamoDBContext PersistenceContext = TestConfiguration.GetDynamoDbContext();
         private static ConcurrentQueue<BookPoco> _recordsForCleanup;
 
-        public static void StartSession() {
-            CreateBooksTable(TestConfiguration.TablePrefix + "BookPoco");
+        public static async Task StartSession() {
+            await CreateBooksTable(TestConfiguration.TablePrefix + "BookPoco");
             _recordsForCleanup = new ConcurrentQueue<BookPoco>();
         }
 
-        public static void CleanSession() {
+        public static async Task CleanSession() {
             Logger.DebugFormat("Removing {0} records from DynamoDb", _recordsForCleanup.Count);
 
-            Parallel.ForEach(_recordsForCleanup, book => PersistenceContext.Delete(book));
+            foreach (var book in _recordsForCleanup)
+            {
+                await PersistenceContext.DeleteAsync(book);
+            }
 
             _recordsForCleanup = new ConcurrentQueue<BookPoco>();
         }
 
-        public static BookPoco CreateBookPoco(
+        public static async Task<BookPoco> CreateBookPoco(
             string name = null,
             int publishYear = default(int),
             string author = default(string),
@@ -60,7 +63,7 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers {
 
             if (persistToDynamoDb) {
                 Logger.DebugFormat("Persisting book: {0}", book.Name);
-                PersistenceContext.Save(book);
+                await PersistenceContext.SaveAsync(book);
             } else {
                 Logger.DebugFormat("Created in-memory book: {0}", book.Name);
             }
@@ -72,9 +75,9 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers {
             return book;
         }
 
-        public static void CreateBooksTable(string tableName) {
+        public static async Task CreateBooksTable(string tableName) {
             try {
-                DynamoDbClient.CreateTable(
+                await DynamoDbClient.CreateTableAsync(
                     new CreateTableRequest {
                         TableName = tableName,
                         AttributeDefinitions =

@@ -7,11 +7,17 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2DABB94D-C76A-4819-BE1E-A24F129E5852/c5/860377c0/DynamoDBContext.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
       <option value="$PROJECT_DIR$/Linq2DynamoDb.DataContext/Linq2DynamoDb.DataContext.csproj" />
       <option value="$PROJECT_DIR$/Linq2DynamoDb.DataContext/EntityProxy.cs" />
       <option value="$PROJECT_DIR$/Linq2DynamoDb.DataContext/Readers/ReaderBase.cs" />
+      <option value="$PROJECT_DIR$/Linq2DynamoDb.DataContext.Tests/Linq2DynamoDb.DataContext.Tests.csproj" />
+      <option value="$PROJECT_DIR$/Linq2DynamoDb.DataContext.Tests/Helpers/BookPocoHelper.cs" />
+      <option value="$PROJECT_DIR$/Linq2DynamoDb.DataContext.Tests/DataContextTestBase.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1s9NoWtWIKtYoJZ0cJLzybkA56j" />

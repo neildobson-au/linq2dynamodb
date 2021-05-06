@@ -1,4 +1,5 @@
-﻿using Linq2DynamoDb.DataContext.Tests.Helpers;
+﻿using System.Threading.Tasks;
+using Linq2DynamoDb.DataContext.Tests.Helpers;
 using log4net;
 using NUnit.Framework;
 
@@ -11,17 +12,17 @@ namespace Linq2DynamoDb.DataContext.Tests
         protected DataContext Context { get; set; }
 
         [TestFixtureSetUp]
-        public static void ClassInit()
+        public static async Task ClassInit()
         {
             BooksHelper.StartSession();
-            BookPocosHelper.StartSession();
+            await BookPocosHelper.StartSession();
         }
 
         [TestFixtureTearDown]
-        public static void ClassClean()
+        public static async Task ClassClean()
         {
             BooksHelper.CleanSession();
-            BookPocosHelper.CleanSession();
+            await BookPocosHelper.CleanSession();
         }
 
         [SetUp]

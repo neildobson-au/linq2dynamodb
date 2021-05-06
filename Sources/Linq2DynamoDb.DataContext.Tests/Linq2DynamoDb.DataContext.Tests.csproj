@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Copyright>Copyright © 2017</Copyright>
     <AssemblyTitle>Linq2DynamoDb.DataContext.Tests</AssemblyTitle>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Linq2DynamoDb.DataContext.Tests</AssemblyName>
     <PackageId>Linq2DynamoDb.DataContext.Tests</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -32,14 +32,6 @@
     <PackageReference Include="NUnit" Version="2.6.3" />
     <PackageReference Include="NUnitTestAdapter" Version="2.2.0" />
     <PackageReference Include="redis-64" Version="3.0.503" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Serialization" />
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
 </Project>
