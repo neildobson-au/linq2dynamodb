@@ -16,12 +16,12 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers {
         private static readonly DynamoDBContext PersistenceContext = TestConfiguration.GetDynamoDbContext();
         private static ConcurrentQueue<BookPoco> _recordsForCleanup;
 
-        public static async Task StartSession() {
-            await CreateBooksTable(TestConfiguration.TablePrefix + "BookPoco");
+        public static async Task StartSessionAsync() {
+            await CreateBooksTableAsync(TestConfiguration.TablePrefix + "BookPoco");
             _recordsForCleanup = new ConcurrentQueue<BookPoco>();
         }
 
-        public static async Task CleanSession() {
+        public static async Task CleanSessionAsync() {
             Logger.DebugFormat("Removing {0} records from DynamoDb", _recordsForCleanup.Count);
 
             foreach (var book in _recordsForCleanup)
@@ -32,7 +32,7 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers {
             _recordsForCleanup = new ConcurrentQueue<BookPoco>();
         }
 
-        public static async Task<BookPoco> CreateBookPoco(
+        public static async Task<BookPoco> CreateBookPocoAsync(
             string name = null,
             int publishYear = default(int),
             string author = default(string),
@@ -45,7 +45,7 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers {
             bool persistToDynamoDb = true,
             BookPoco.PublisherDto publisher = default(BookPoco.PublisherDto),
             List<BookPoco.ReviewDto> reviews = default(List<BookPoco.ReviewDto>)) {
-            name = name ?? "TestBook" + Guid.NewGuid();
+            name ??= "TestBook" + Guid.NewGuid();
 
             var book = new BookPoco {
                 Name = name,
@@ -75,7 +75,7 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers {
             return book;
         }
 
-        public static async Task CreateBooksTable(string tableName) {
+        public static async Task CreateBooksTableAsync(string tableName) {
             try {
                 await DynamoDbClient.CreateTableAsync(
                     new CreateTableRequest {

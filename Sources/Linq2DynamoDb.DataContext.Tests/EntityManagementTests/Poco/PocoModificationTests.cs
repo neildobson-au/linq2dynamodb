@@ -2,6 +2,7 @@
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
 {
@@ -13,91 +14,92 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
             this.Context = TestConfiguration.GetDataContext();
         }
 
-        public override void TearDown()
+        public override Task TearDown()
         {
+            return Task.CompletedTask;
         }
 
         [Test]
-        public void DataContext_EntityModification_UpdatesRecordWithNewValues()
+        public async Task DataContext_EntityModification_UpdatesRecordWithNewValues()
         {
-            var book = BookPocosHelper.CreateBookPoco(popularityRating: BookPoco.Popularity.Average, persistToDynamoDb: false);
+            var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average, persistToDynamoDb: false);
 
             var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
             book.PopularityRating = BookPoco.Popularity.High;
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBookPoco.PopularityRating, "Record was not updated");
         }
 
         [Test]
-        public void DataContext_EntityModification_UpdateRecordWithNewArray()
+        public async Task DataContext_EntityModification_UpdateRecordWithNewArray()
         {
-            var book = BookPocosHelper.CreateBookPoco(rentingHistory: null, persistToDynamoDb: false);
+            var book = await BookPocosHelper.CreateBookPocoAsync(rentingHistory: null, persistToDynamoDb: false);
             var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBookPoco.RentingHistory = new List<string>() { "non-empty array" };
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBookPocoAfterModification = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPocoAfterModification = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             CollectionAssert.AreEquivalent(storedBookPoco.RentingHistory, storedBookPocoAfterModification.RentingHistory);
         }
 
         [Ignore("This behavior is currently expected. SubmitChanges() uses DocumentBatchWrite, which only supports PUT operations with default 'replace' behavior")]
         [Test]
-        public void DataContext_EntityModification_UpdateShouldNotAffectFieldsModifiedFromOutside()
+        public async Task DataContext_EntityModification_UpdateShouldNotAffectFieldsModifiedFromOutside()
         {
-            var book = BookPocosHelper.CreateBookPoco(popularityRating: BookPoco.Popularity.Average, persistToDynamoDb: false);
+            var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average, persistToDynamoDb: false);
 
             var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
             // Update record from outside of DataTable
-            BookPocosHelper.CreateBookPoco(book.Name, book.PublishYear, numPages: 15);
+            await BookPocosHelper.CreateBookPocoAsync(book.Name, book.PublishYear, numPages: 15);
 
             book.PopularityRating = BookPoco.Popularity.High;
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBookPoco.PopularityRating, "Record was not updated");
             Assert.AreEqual(book.NumPages, 15, "Update has erased changes from outside");
         }
 
         [Test]
-        public void DataContext_UpdateEntity_UpdatesRecordWhenOldRecordIsNull()
+        public async Task DataContext_UpdateEntity_UpdatesRecordWhenOldRecordIsNull()
         {
-            var book = BookPocosHelper.CreateBookPoco(popularityRating: BookPoco.Popularity.Average);
+            var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average);
 
             var booksTable = this.Context.GetTable<BookPoco>();
 
             book.PopularityRating = BookPoco.Popularity.High;
             ((ITableCudOperations)booksTable).UpdateEntity(book, null);
 
-            var storedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBookPoco.PopularityRating, "Record was not updated");
         }
 
         [Test]
-        public void DataContext_UpdateEntity_UpdatesRecordWhenOldRecordDoesNotMatchNewRecord()
+        public async Task DataContext_UpdateEntity_UpdatesRecordWhenOldRecordDoesNotMatchNewRecord()
         {
-            var book = BookPocosHelper.CreateBookPoco(popularityRating: BookPoco.Popularity.Average);
+            var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average);
 
             var booksTable = this.Context.GetTable<BookPoco>();
-            var storedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBookPoco.PopularityRating = BookPoco.Popularity.High;
             ((ITableCudOperations)booksTable).UpdateEntity(storedBookPoco, book);
 
-            var updatedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var updatedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(storedBookPoco.PopularityRating, updatedBookPoco.PopularityRating, "Record was not updated");
         }
     }

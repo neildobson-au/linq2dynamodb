@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
@@ -11,11 +12,11 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
         // ReSharper disable InconsistentNaming
         [Ignore("Seems to be a bug in DynamoDb: conditions for the same field are combined with OR operator instead of AND")]
         [Test]
-        public void DateContext_Query_QueryResultSubqueryReturnsSameRecordSetIfSearchCritereaExpanded()
+        public async Task DateContext_Query_QueryResultSubqueryReturnsSameRecordSetIfSearchCritereaExpanded()
         {
-            var book = BooksHelper.CreateBook();
+            var book = await BooksHelper.CreateBookAsync();
             // Create another book that will be stored as second+ record in table
-            BooksHelper.CreateBook();
+            await BooksHelper.CreateBookAsync();
 
             var bookTable = Context.GetTable<Book>();
             var booksQuery = from record in bookTable where record.Name == book.Name select record;
@@ -30,13 +31,13 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
         }
 
         [Test]
-        public void DateContext_Query_QueryResultSubqueryReturnsShrinkedRecordSet()
+        public async Task DateContext_Query_QueryResultSubqueryReturnsShrinkedRecordSet()
         {
             // ReSharper disable once RedundantArgumentDefaultValue
-            var book = BooksHelper.CreateBook(publishYear: 0);
-            var book2 = BooksHelper.CreateBook(book.Name, 1);
+            var book = await BooksHelper.CreateBookAsync(publishYear: 0);
+            var book2 = await BooksHelper.CreateBookAsync(book.Name, 1);
             // Another book that will fit subquery search criterea
-            BooksHelper.CreateBook(publishYear: book2.PublishYear);
+            await BooksHelper.CreateBookAsync(publishYear: book2.PublishYear);
 
             var bookTable = Context.GetTable<Book>();
             var booksQuery = from record in bookTable where record.Name == book.Name select record;
@@ -51,10 +52,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
         }
 
 		[Test]
-		public void DateContext_Query_SupportsZipOperationBetweenTwoQueries()
+		public async Task DateContext_Query_SupportsZipOperationBetweenTwoQueries()
 		{
-			var book1 = BooksHelper.CreateBook(publishYear: 2012);
-			var book2 = BooksHelper.CreateBook(publishYear: 2013);
+			var book1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			var book2 = await BooksHelper.CreateBookAsync(publishYear: 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery1 = from record in bookTable where record.Name == book1.Name select record;
@@ -74,10 +75,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_UnionReturnsCombinationOfTwoQueries()
+		public async Task DateContext_Query_UnionReturnsCombinationOfTwoQueries()
 		{
-			var book1 = BooksHelper.CreateBook();
-			var book2 = BooksHelper.CreateBook();
+			var book1 = await BooksHelper.CreateBookAsync();
+			var book2 = await BooksHelper.CreateBookAsync();
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery1 = from record in bookTable where record.Name == book1.Name select record;
@@ -97,10 +98,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_ConcatReturnsCombinationOfTwoQueries()
+		public async Task DateContext_Query_ConcatReturnsCombinationOfTwoQueries()
 		{
-			var book1 = BooksHelper.CreateBook();
-			var book2 = BooksHelper.CreateBook();
+			var book1 = await BooksHelper.CreateBookAsync();
+			var book2 = await BooksHelper.CreateBookAsync();
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery1 = from record in bookTable where record.Name == book1.Name select record;
@@ -117,10 +118,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_DistinctReturnsFilteredCollectionWithoutDuplicates()
+		public async Task DateContext_Query_DistinctReturnsFilteredCollectionWithoutDuplicates()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery1 = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -134,13 +135,13 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-        [Ignore]
-        public void DateContext_Query_ExceptReturnsSubsetOfQueryNotIncludingAnotherQueryResults()
+        [Ignore("it")]
+        public async Task DateContext_Query_ExceptReturnsSubsetOfQueryNotIncludingAnotherQueryResults()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			var bookRev2 = BooksHelper.CreateBook(bookRev1.Name, 2013);
-			var bookRev3 = BooksHelper.CreateBook(bookRev1.Name, 2014);
-			BooksHelper.CreateBook(bookRev1.Name, 2015);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			var bookRev2 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
+			var bookRev3 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2014);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2015);
 
 			var bookTable = Context.GetTable<Book>();
 			// ReSharper disable once ImplicitlyCapturedClosure

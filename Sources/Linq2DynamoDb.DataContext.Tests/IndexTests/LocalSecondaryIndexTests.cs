@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
 using NUnit.Framework;
 
@@ -288,13 +289,13 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
 			}
 		}
 
-        public override void TearDown()
+        public override async Task TearDown()
         {
             try
             {
-				this.NoIndexContext.DeleteTable<ForumThread>();
-				this.OneIndexContext.DeleteTable<ForumThread>();
-                this.TwoIndexContext.DeleteTable<ForumThread>();
+				await this.NoIndexContext.DeleteTableAsync<ForumThread>();
+				await this.OneIndexContext.DeleteTableAsync<ForumThread>();
+                await this.TwoIndexContext.DeleteTableAsync<ForumThread>();
             }
             catch (ResourceNotFoundException)
             {

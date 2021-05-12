@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
@@ -10,10 +10,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 	{
         // ReSharper disable InconsistentNaming
 		[Test]
-		public void DateContext_Query_FirstFunctionReturnsFirstElementWithoutPredicate()
+		public async Task DateContext_Query_FirstFunctionReturnsFirstElementWithoutPredicate()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -24,10 +24,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_FirstFunctionReturnsFirstElementMatchingPredicate()
+		public async Task DateContext_Query_FirstFunctionReturnsFirstElementMatchingPredicate()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			var bookRev2 = BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			var bookRev2 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -38,10 +38,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_FirstOrDefaultFunctionReturnsDefaultValueIfNotFound()
+		public async Task DateContext_Query_FirstOrDefaultFunctionReturnsDefaultValueIfNotFound()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -52,10 +52,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_LastFunctionReturnsFirstElementWithoutPredicate()
+		public async Task DateContext_Query_LastFunctionReturnsFirstElementWithoutPredicate()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			var bookRev2 = BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			var bookRev2 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -66,10 +66,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_LastFunctionReturnsFirstElementMatchingPredicate()
+		public async Task DateContext_Query_LastFunctionReturnsFirstElementMatchingPredicate()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -80,10 +80,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_LastOrDefaultFunctionReturnsDefaultValueIfNotFound()
+		public async Task DateContext_Query_LastOrDefaultFunctionReturnsDefaultValueIfNotFound()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -94,11 +94,11 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_ElementAtReturnsCorrectElement()
+		public async Task DateContext_Query_ElementAtReturnsCorrectElement()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			var bookRev2 = BooksHelper.CreateBook(bookRev1.Name, 2013);
-			BooksHelper.CreateBook(bookRev1.Name, 2014);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			var bookRev2 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2014);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -109,11 +109,11 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
-		public void DateContext_Query_ElementAtThrowsArgumentOutOfRangeExceptionWhenInvalidIndexSpecified()
+		// [ExpectedException(typeof(ArgumentOutOfRangeException))]
+		public async Task DateContext_Query_ElementAtThrowsArgumentOutOfRangeExceptionWhenInvalidIndexSpecified()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -123,10 +123,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_ElementAtOrDefaultReturnsDefaultValueIfNotFound()
+		public async Task DateContext_Query_ElementAtOrDefaultReturnsDefaultValueIfNotFound()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -137,13 +137,13 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_SkipsSpecifiedNumberOfRecords()
+		public async Task DateContext_Query_SkipsSpecifiedNumberOfRecords()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
-			BooksHelper.CreateBook(bookRev1.Name, 2014);
-			var bookRev4 = BooksHelper.CreateBook(bookRev1.Name, 2015);
-			var bookRev5 = BooksHelper.CreateBook(bookRev1.Name, 2016);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2014);
+			var bookRev4 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2015);
+			var bookRev5 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2016);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
@@ -159,13 +159,13 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_SkipsWhileConditionIsTrue()
+		public async Task DateContext_Query_SkipsWhileConditionIsTrue()
 		{
-			var bookRev1 = BooksHelper.CreateBook(publishYear: 2012);
-			BooksHelper.CreateBook(bookRev1.Name, 2013);
-			BooksHelper.CreateBook(bookRev1.Name, 2014);
-			var bookRev4 = BooksHelper.CreateBook(bookRev1.Name, 2015);
-			var bookRev5 = BooksHelper.CreateBook(bookRev1.Name, 2016);
+			var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 2012);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2013);
+			await BooksHelper.CreateBookAsync(bookRev1.Name, 2014);
+			var bookRev4 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2015);
+			var bookRev5 = await BooksHelper.CreateBookAsync(bookRev1.Name, 2016);
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;

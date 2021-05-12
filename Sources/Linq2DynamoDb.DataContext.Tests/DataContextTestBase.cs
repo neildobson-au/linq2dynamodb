@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using log4net;
 using NUnit.Framework;
@@ -11,24 +13,35 @@ namespace Linq2DynamoDb.DataContext.Tests
 
         protected DataContext Context { get; set; }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public static async Task ClassInit()
         {
-            BooksHelper.StartSession();
-            await BookPocosHelper.StartSession();
+            await BooksHelper.StartSessionAsync();
+            await BookPocosHelper.StartSessionAsync();
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public static async Task ClassClean()
         {
-            BooksHelper.CleanSession();
-            await BookPocosHelper.CleanSession();
+            await BooksHelper.CleanSessionAsync();
+            await BookPocosHelper.CleanSessionAsync();
         }
 
         [SetUp]
         public abstract void SetUp();
 
         [TearDown]
-        public abstract void TearDown();
+        public abstract Task TearDown();
+        
+        public static async Task ParallelForAsync(int fromInclusive, int toInclusive, Func<int, Task> body)
+        {
+            var tasks = new List<Task>();
+            for (var i = fromInclusive; i < toInclusive; i++)
+            {
+                tasks.Add(body(i));
+            }
+
+            await Task.WhenAll(tasks);
+        }
     }
 }

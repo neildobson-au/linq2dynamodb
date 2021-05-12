@@ -1,4 +1,5 @@
-﻿using Linq2DynamoDb.DataContext.Tests.QueryTests;
+﻿using System.Threading.Tasks;
+using Linq2DynamoDb.DataContext.Tests.QueryTests;
 using NUnit.Framework;
 
 namespace Linq2DynamoDb.DataContext.Tests.NonCachingTests
@@ -11,8 +12,9 @@ namespace Linq2DynamoDb.DataContext.Tests.NonCachingTests
             this.Context = TestConfiguration.GetDataContext();
         }
 
-        public override void TearDown()
+        public override Task TearDown()
         {
+            return Task.CompletedTask;
         }
     }
 }

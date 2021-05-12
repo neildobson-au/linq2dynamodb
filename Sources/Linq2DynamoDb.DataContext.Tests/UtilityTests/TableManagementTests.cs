@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Linq2DynamoDb.DataContext.Tests.Entities;
@@ -29,11 +30,11 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
             Context = TestConfiguration.GetDataContext(DynamoDbClient, TablePrefix);
         }
 
-        public override void TearDown()
+        public override async Task TearDown()
         {
             try
             {
-                DynamoDbClient.DeleteTable(new DeleteTableRequest { TableName = BooksTableName });
+                await DynamoDbClient.DeleteTableAsync(new DeleteTableRequest { TableName = BooksTableName });
                 Logger.DebugFormat("Table {0} delete initiated", BooksTableName);
             }
             catch (ResourceNotFoundException)
@@ -43,42 +44,42 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
         }
 
         [Test]
-        public void CreatesTableWithHashKey()
+        public async Task CreatesTableWithHashKey()
         {
             // arrange
             var args = new CreateTableArgs<Book>(book => book.Name);
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
         }
 
         [Test]
-        public void CreatesTableWithHashAndRangeKeys()
+        public async Task CreatesTableWithHashAndRangeKeys()
         {
             // arrange
             var args = new CreateTableArgs<Book>(book => book.Name, book => book.PublishYear);
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
         }
 
         [Test]
-        public void CreatesTableWithLocalSecondaryIndexes()
+        public async Task CreatesTableWithLocalSecondaryIndexes()
         {
             // arrange
             var args = new CreateTableArgs<Book>(book => book.Name, book => book.PublishYear, book => book.NumPages, book => book.PopularityRating);
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
@@ -89,7 +90,7 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
         }
 
         [Test]
-        public void CreatesTableWithGlobalSecondaryIndexes()
+        public async Task CreatesTableWithGlobalSecondaryIndexes()
         {
             // arrange
             var args = new CreateTableArgs<Book>
@@ -112,8 +113,8 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
             );
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
@@ -133,7 +134,7 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
         }
 
         [Test]
-        public void CreatesTableWithConstantCapacity()
+        public async Task CreatesTableWithConstantCapacity()
         {
             // arrange
             const long readCapacity = 2;
@@ -141,8 +142,8 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
             var args = new CreateTableArgs<Book>(readCapacity, writeCapacity, book => book.Name, book => book.PublishYear);
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
@@ -163,7 +164,7 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
         }
 
         [Test]
-        public void CreatesTableWithGlobalSecondaryIndexUsingConstantCapacity()
+        public async Task CreatesTableWithGlobalSecondaryIndexUsingConstantCapacity()
         {
             // arrange
             const long readCapacity = 2;
@@ -186,8 +187,8 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
             );
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
@@ -200,7 +201,7 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
 
         [Test]
         [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
-        public void CreatesTableWithRuntimeVariableCapacity()
+        public async Task CreatesTableWithRuntimeVariableCapacity()
         {
             // arrange
             Func<long> getReadCapacityFunc = () => 2;
@@ -208,8 +209,8 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
             var args = new CreateTableArgs<Book>(getReadCapacityFunc(), getWriteCapacityFunc(), book => book.Name, book => book.PublishYear);
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
@@ -220,7 +221,7 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
 
         [Test]
         [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
-        public void CreatesTableWithGlobalSecondaryIndexUsingRuntimeVariableCapacity()
+        public async Task CreatesTableWithGlobalSecondaryIndexUsingRuntimeVariableCapacity()
         {
             // arrange
             Func<long> getReadCapacityFunc = () => 2;
@@ -243,8 +244,8 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
             );
 
             // act
-            Context.CreateTableIfNotExists(args);
-            var tableData = DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+            await Context.CreateTableIfNotExistsAsync(args);
+            var tableData = await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
@@ -256,18 +257,18 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
         }
 
         [Test]
-        public void DeletesExistingTable()
+        public async Task DeletesExistingTable()
         {
             // arrange
             var args = new CreateTableArgs<Book>(book => book.Name, book => book.PublishYear);
-            Context.CreateTableIfNotExists(args);
+            await Context.CreateTableIfNotExistsAsync(args);
 
             // act
-            Context.DeleteTable<Book>();
+            await Context.DeleteTableAsync<Book>();
 
             try
             {
-                DynamoDbClient.DescribeTable(new DescribeTableRequest { TableName = BooksTableName });
+                await DynamoDbClient.DescribeTableAsync(new DescribeTableRequest { TableName = BooksTableName });
 
                 Assert.Fail();
             }

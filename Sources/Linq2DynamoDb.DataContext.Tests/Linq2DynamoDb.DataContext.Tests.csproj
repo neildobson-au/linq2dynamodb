@@ -18,20 +18,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Linq2DynamoDb.DataContext\Linq2DynamoDb.DataContext.csproj" />
-    <ProjectReference Include="..\Linq2DynamoDb.DataContext.Caching.MemcacheD\Linq2DynamoDb.DataContext.Caching.MemcacheD.csproj" />
-    <ProjectReference Include="..\Linq2DynamoDb.DataContext.Caching.Redis\Linq2DynamoDb.DataContext.Caching.Redis.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.7" />
-    <PackageReference Include="NUnit" Version="2.6.3" />
-    <PackageReference Include="NUnitTestAdapter" Version="2.2.0" />
-    <PackageReference Include="redis-64" Version="3.0.503" />
+    <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnitTestAdapter" Version="2.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
   </ItemGroup>
 
 </Project>

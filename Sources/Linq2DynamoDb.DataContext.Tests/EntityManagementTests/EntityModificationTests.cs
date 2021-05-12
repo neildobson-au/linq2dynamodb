@@ -3,6 +3,7 @@ using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
 {
@@ -14,19 +15,19 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
             this.Context = TestConfiguration.GetDataContext();
         }
 
-        public override void TearDown()
+        public override Task TearDown()
         {
+            return Task.CompletedTask;
         }
 
-
         [Test]
-        public void DataContext_EntityModification_UpdatesManyEntities()
+        public async Task DataContext_EntityModification_UpdatesManyEntities()
         {
-            var bookRev1 = BooksHelper.CreateBook(publishYear: 0);
+            var bookRev1 = await BooksHelper.CreateBookAsync(publishYear: 0);
 
             for(int i = 0; i < 200; i++)
             {
-                BooksHelper.CreateBook(bookRev1.Name, i);
+                await BooksHelper.CreateBookAsync(bookRev1.Name, i);
             }
 
             var query = Context.GetTable<Book>().Where(b => b.Name == bookRev1.Name);
@@ -36,92 +37,92 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
                 b.Author = "scale-tone";
             }
 
-            Context.SubmitChanges();
+            await Context.SubmitChangesAsync();
         }
 
 
 
         [Test]
-        public void DataContext_EntityModification_UpdatesRecordWithNewValues()
+        public async Task DataContext_EntityModification_UpdatesRecordWithNewValues()
         {
-            var book = BooksHelper.CreateBook(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
+            var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
 
             var booksTable = this.Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
             book.PopularityRating = Book.Popularity.High;
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBook = booksTable.Find(book.Name, book.PublishYear);
+            var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBook.PopularityRating, "Record was not updated");
         }
 
         [Test]
-        public void DataContext_EntityModification_UpdateRecordWithNewArray() 
+        public async Task DataContext_EntityModification_UpdateRecordWithNewArray() 
         {
-            var book = BooksHelper.CreateBook(rentingHistory: null, persistToDynamoDb: false);
+            var book = await BooksHelper.CreateBookAsync(rentingHistory: null, persistToDynamoDb: false);
             var booksTable = this.Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBook = booksTable.Find(book.Name, book.PublishYear);
+            var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBook.RentingHistory = new List<string>() { "non-empty array" };
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBookAfterModification = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookAfterModification = await booksTable.FindAsync(book.Name, book.PublishYear);
             
             CollectionAssert.AreEquivalent(storedBook.RentingHistory, storedBookAfterModification.RentingHistory);
         }
 
         [Ignore("This behavior is currently expected. SubmitChanges() uses DocumentBatchWrite, which only supports PUT operations with default 'replace' behavior")]
         [Test]
-        public void DataContext_EntityModification_UpdateShouldNotAffectFieldsModifiedFromOutside()
+        public async Task DataContext_EntityModification_UpdateShouldNotAffectFieldsModifiedFromOutside()
         {
-            var book = BooksHelper.CreateBook(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
+            var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
 
             var booksTable = this.Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
             // Update record from outside of DataTable
-            BooksHelper.CreateBook(book.Name, book.PublishYear, numPages: 15);
+            await BooksHelper.CreateBookAsync(book.Name, book.PublishYear, numPages: 15);
 
             book.PopularityRating = Book.Popularity.High;
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
-            var storedBook = booksTable.Find(book.Name, book.PublishYear);
+            var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBook.PopularityRating, "Record was not updated");
             Assert.AreEqual(book.NumPages, 15, "Update has erased changes from outside");
         }
 
         [Test]
-        public void DataContext_UpdateEntity_UpdatesRecordWhenOldRecordIsNull()
+        public async Task DataContext_UpdateEntity_UpdatesRecordWhenOldRecordIsNull()
         {
-            var book = BooksHelper.CreateBook(popularityRating: Book.Popularity.Average);
+            var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average);
 
             var booksTable = this.Context.GetTable<Book>();
 
             book.PopularityRating = Book.Popularity.High;
             ((ITableCudOperations)booksTable).UpdateEntity(book, null);
 
-            var storedBook = booksTable.Find(book.Name, book.PublishYear);
+            var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBook.PopularityRating, "Record was not updated");
         }
 
         [Test]
-        public void DataContext_UpdateEntity_UpdatesRecordWhenOldRecordDoesNotMatchNewRecord()
+        public async Task DataContext_UpdateEntity_UpdatesRecordWhenOldRecordDoesNotMatchNewRecord()
         {
-            var book = BooksHelper.CreateBook(popularityRating: Book.Popularity.Average);
+            var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average);
 
             var booksTable = this.Context.GetTable<Book>();
-            var storedBook = booksTable.Find(book.Name, book.PublishYear);
+            var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBook.PopularityRating = Book.Popularity.High;
             ((ITableCudOperations)booksTable).UpdateEntity(storedBook, book);
 
-            var updatedBook = booksTable.Find(book.Name, book.PublishYear);
+            var updatedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(storedBook.PopularityRating, updatedBook.PopularityRating, "Record was not updated");
         }
     }

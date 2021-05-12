@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
@@ -13,31 +14,32 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
             this.Context = TestConfiguration.GetDataContext();
         }
 
-        public override void TearDown()
+        public override Task TearDown()
         {
+            return Task.CompletedTask;
         }
 
         [Test]
-        public void DataContext_EntityRemoval_RemovesExistingRecordFromDynamoDb()
+        public async Task DataContext_EntityRemoval_RemovesExistingRecordFromDynamoDb()
         {
-            var book = BookPocosHelper.CreateBookPoco();
+            var book = await BookPocosHelper.CreateBookPocoAsync();
 
             var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.RemoveOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
 
             var storedBookPocosCount = booksTable.Count(storedBookPoco => storedBookPoco.Name == book.Name);
             Assert.AreEqual(0, storedBookPocosCount, "Record was not deleted");
         }
 
         [Test]
-        public void DataContext_EntityRemoval_DoesNotThrowAnyExceptionsIfRecordToRemoveDoesNotExist()
+        public async Task DataContext_EntityRemoval_DoesNotThrowAnyExceptionsIfRecordToRemoveDoesNotExist()
         {
-            var book = BookPocosHelper.CreateBookPoco(persistToDynamoDb: false);
+            var book = await BookPocosHelper.CreateBookPocoAsync(persistToDynamoDb: false);
 
             var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.RemoveOnSubmit(book);
-            this.Context.SubmitChanges();
+            await this.Context.SubmitChangesAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
@@ -9,9 +10,9 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 	{
         // ReSharper disable InconsistentNaming
 		[Test]
-		public void DateContext_Query_SupportsToList()
+		public async Task DateContext_Query_SupportsToList()
 		{
-			var book = BooksHelper.CreateBook();
+			var book = await BooksHelper.CreateBookAsync();
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == book.Name select record;
@@ -26,9 +27,9 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_SupportsToArray()
+		public async Task DateContext_Query_SupportsToArray()
 		{
-			var book = BooksHelper.CreateBook();
+			var book = await BooksHelper.CreateBookAsync();
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == book.Name select record;
@@ -43,9 +44,9 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		public void DateContext_Query_SupportsToDictionary()
+		public async Task DateContext_Query_SupportsToDictionary()
 		{
-			var book = BooksHelper.CreateBook();
+			var book = await BooksHelper.CreateBookAsync();
 
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == book.Name select record;
