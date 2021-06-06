@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 {
@@ -28,14 +29,13 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		// [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Sequence contains no elements")]
 		public void DateContext_Query_MaxFunctionReturnsExceptionIfNoElementsPresent()
 		{
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == Guid.NewGuid().ToString() select record;
 
-			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-			booksQuery.Max(book => book.PublishYear);
+			Should.Throw<InvalidOperationException>(() => booksQuery.Max(book => book.PublishYear))
+				.Message.ShouldContain("Sequence contains no elements");
 		}
 
 		[Test]
@@ -56,14 +56,13 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		// [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Sequence contains no elements")]
 		public void DateContext_Query_MinFunctionReturnsExceptionIfNoElementsPresent()
 		{
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == Guid.NewGuid().ToString() select record;
 
-			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-			booksQuery.Min(book => book.PublishYear);
+			Should.Throw<InvalidOperationException>(() => booksQuery.Min(book => book.PublishYear))
+				.Message.ShouldContain("Sequence contains no elements");
 		}
 
 		[Test]
@@ -84,14 +83,13 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		}
 
 		[Test]
-		// [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Sequence contains no elements")]
 		public void DateContext_Query_AverageFunctionReturnsExceptionIfNoElementsPresent()
 		{
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == Guid.NewGuid().ToString() select record;
 
-			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-			booksQuery.Average(book => book.PublishYear);
+			Should.Throw<InvalidOperationException>(() => booksQuery.Average(book => book.PublishYear))
+				.Message.ShouldContain("Sequence contains no elements");
 		}
 
 		// ReSharper restore InconsistentNaming

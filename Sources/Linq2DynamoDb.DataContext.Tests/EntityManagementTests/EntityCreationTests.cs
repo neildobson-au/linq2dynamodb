@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
 {
@@ -48,7 +50,6 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         }
 
         [Test]
-        // [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "cannot be added, because entity with that key already exists", MatchType = MessageMatch.Contains)]
         public async Task DataContext_EntityCreation_ThrowsExceptionWhenTryingToAddSameEntityTwice()
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
@@ -60,11 +61,13 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
             book.PopularityRating = Book.Popularity.High;
 
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+
+            (await Should.ThrowAsync<InvalidOperationException>(() => this.Context.SubmitChangesAsync())).Message.ShouldContain(
+                "cannot be added, because entity with that key already exists"
+            );
         }
 
         [Test]
-        // [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "cannot be added, because entity with that key already exists", MatchType = MessageMatch.Contains)]
         public async Task DataContext_EntityCreation_ThrowsExceptionWhenEntityPreviouslyStoredInDynamoDbWasQueriedInCurrentContext()
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average);
@@ -75,7 +78,10 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
             book.PopularityRating = Book.Popularity.High;
 
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+
+            (await Should.ThrowAsync<InvalidOperationException>(() => this.Context.SubmitChangesAsync())).Message.ShouldContain(
+                "cannot be added, because entity with that key already exists"
+            );
         }
 
         [Test]

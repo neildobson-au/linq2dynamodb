@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 {
@@ -33,30 +34,31 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
         }
 
         [Test]
-        // [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Sequence contains no elements")]
         public async Task DataContext_Find_ThrowsExceptionWhenRecordDoesNotExist()
         {
             var bookTable = Context.GetTable<Book>();
-            await bookTable.FindAsync(Guid.NewGuid().ToString(), 0);
+
+			(await Should.ThrowAsync<InvalidOperationException>(() => bookTable.FindAsync(Guid.NewGuid().ToString(), 0)))
+				.Message.ShouldContain("Sequence contains no elements");
         }
 
-
         [Test]
-        // [ExpectedException(typeof(AggregateException))]
-        public void DataContext_FindAsync_ThrowsExceptionWhenRecordDoesNotExist()
+        public async Task DataContext_FindAsync_ThrowsExceptionWhenRecordDoesNotExist()
         {
             var bookTable = Context.GetTable<Book>();
-            bookTable.FindAsync(Guid.NewGuid().ToString(), 0).Wait();
+
+			await Should.ThrowAsync<InvalidOperationException>(() => bookTable.FindAsync(Guid.NewGuid().ToString(), 0));
         }
 
         [Test]
-        // [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "has 2 key fields, but 1 key values was provided", MatchType = MessageMatch.Contains)]
         public async Task DataContext_Find_ThrowsExceptionIfUserDoesNotProvideRangeKeyInHashRangeTables()
         {
             var book = await BooksHelper.CreateBookAsync();
 
             var bookTable = Context.GetTable<Book>();
-            await bookTable.FindAsync(book.Name);
+            
+			(await Should.ThrowAsync<InvalidOperationException>(() => bookTable.FindAsync(book.Name)))
+				.Message.ShouldContain("has 2 key fields, but 1 key values was provided");
         }
 
         [Test]
@@ -442,14 +444,15 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 	    }
 
 	    [Test]
-        // [ExpectedException(typeof(InvalidOperationException))]
 	    public void DateContext_Query_ThrowsOnMultipleConditionsForTheSameField()
 	    {
 	        var query = from b in Context.GetTable<Book>()
 	            where b.PublishYear > 2000 && b.PublishYear < 3000
                 select b;
 
-	        var array = query.ToArray();
+			Should.Throw<InvalidOperationException>(() => query.ToArray()).Message.ShouldContain(
+				"Multiple conditions for the same PublishYear field are not supported by AWS SDK. As a workaround, please, use a custom FilterExpression"
+			);
 	    }
 
         [Test]
