@@ -12,7 +12,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
         // ReSharper disable InconsistentNaming
         [Ignore("Seems to be a bug in DynamoDb: conditions for the same field are combined with OR operator instead of AND")]
         [Test]
-        public async Task DateContext_Query_QueryResultSubqueryReturnsSameRecordSetIfSearchCritereaExpanded()
+        public async Task DateContext_Query_QueryResultSubQueryReturnsSameRecordSetIfSearchCriteriaExpanded()
         {
             var book = await BooksHelper.CreateBookAsync();
             // Create another book that will be stored as second+ record in table
@@ -20,7 +20,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 
             var bookTable = Context.GetTable<Book>();
             var booksQuery = from record in bookTable where record.Name == book.Name select record;
-            // Expand search criterea to also match another record(s)
+            // Expand search criteria to also match another record(s)
             // Keep in mind that we still have first query as strict hash-key equality which should not be overriden by subqueries
             var subQuery = from record in booksQuery where record.Name != null select record;
             Assert.AreEqual(1, subQuery.Count());
@@ -36,7 +36,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
             // ReSharper disable once RedundantArgumentDefaultValue
             var book = await BooksHelper.CreateBookAsync(publishYear: 0);
             var book2 = await BooksHelper.CreateBookAsync(book.Name, 1);
-            // Another book that will fit subquery search criterea
+            // Another book that will fit subquery search criteria
             await BooksHelper.CreateBookAsync(publishYear: book2.PublishYear);
 
             var bookTable = Context.GetTable<Book>();
@@ -64,7 +64,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 			// AsEnumerable should be used for such linq requests by design
 			var zipResult = booksQuery1.AsEnumerable().Zip(
 				booksQuery2,
-				(_book1, _book2) => new Book { Name = _book1.Name + _book2.Name, PublishYear = _book1.PublishYear + _book2.PublishYear });
+				(_book1, _book2) => new Book { Name = _book1.Name + _book2.Name, PublishYear = _book1.PublishYear + _book2.PublishYear }).ToList();
 
 			Assert.AreEqual(1, zipResult.Count());
 
@@ -85,7 +85,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 			var booksQuery2 = from record in bookTable where record.Name == book2.Name select record;
 
 			// AsEnumerable should be used for such linq requests by design
-			var unionResult = booksQuery1.AsEnumerable().Union(booksQuery2);
+			var unionResult = booksQuery1.AsEnumerable().Union(booksQuery2).ToList();
 
 			Assert.AreEqual(2, unionResult.Count());
 
@@ -108,7 +108,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 			var booksQuery2 = from record in bookTable where record.Name == book2.Name select record;
 
 			// AsEnumerable should be used for such linq requests by design
-			var concatResult = booksQuery1.AsEnumerable().Concat(booksQuery2);
+			var concatResult = booksQuery1.AsEnumerable().Concat(booksQuery2).ToList();
 
 			Assert.AreEqual(2, concatResult.Count());
 
@@ -163,7 +163,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 		{
 			public bool Equals(Book x, Book y)
 			{
-				return x.Name == y.Name;
+				return x?.Name == y?.Name;
 			}
 
 			public int GetHashCode(Book obj)

@@ -144,18 +144,18 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
 
         private void ClearFlags()
         {
-            this._queryOperationUsed = false;
-            this._indexQueryOperationUsed = false;
-            this._indexNameUsed = string.Empty;
+            _queryOperationUsed = false;
+            _indexQueryOperationUsed = false;
+            _indexNameUsed = string.Empty;
         }
 
         public override void SetUp()
         {
-            var noIndexTablePrefix = typeof(GlobalSecondaryIndexTests).Name + Guid.NewGuid();
-            var oneIndexTablePrefix = typeof(GlobalSecondaryIndexTests).Name + Guid.NewGuid();
-            var twoIndexTablePrefix = typeof(GlobalSecondaryIndexTests).Name + Guid.NewGuid();
+            var noIndexTablePrefix = nameof(GlobalSecondaryIndexTests) + Guid.NewGuid();
+            var oneIndexTablePrefix = nameof(GlobalSecondaryIndexTests) + Guid.NewGuid();
+            var twoIndexTablePrefix = nameof(GlobalSecondaryIndexTests) + Guid.NewGuid();
 
-            this.ClearFlags();
+            ClearFlags();
 
             TestConfiguration.GetDataContext(noIndexTablePrefix).CreateTableIfNotExists
             (
@@ -218,17 +218,17 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
                 )
             );
 
-            this.NoIndexContext = TestConfiguration.GetDataContext(noIndexTablePrefix);
-            this.OneIndexContext = TestConfiguration.GetDataContext(oneIndexTablePrefix);
-            this.TwoIndexContext = TestConfiguration.GetDataContext(twoIndexTablePrefix);
+            NoIndexContext = TestConfiguration.GetDataContext(noIndexTablePrefix);
+            OneIndexContext = TestConfiguration.GetDataContext(oneIndexTablePrefix);
+            TwoIndexContext = TestConfiguration.GetDataContext(twoIndexTablePrefix);
 
-            this.NoIndexContext.OnLog += this.Context_OnLog;
-            this.OneIndexContext.OnLog += this.Context_OnLog;
-            this.TwoIndexContext.OnLog += this.Context_OnLog;
+            NoIndexContext.OnLog += Context_OnLog;
+            OneIndexContext.OnLog += Context_OnLog;
+            TwoIndexContext.OnLog += Context_OnLog;
 
-            this.NoIndexThreadTable = this.NoIndexContext.GetTable<GameScores>();
-            this.OneIndexThreadTable = this.OneIndexContext.GetTable<GameScores>();
-            this.TwoIndexThreadTable = this.TwoIndexContext.GetTable<GameScores>();
+            NoIndexThreadTable = NoIndexContext.GetTable<GameScores>();
+            OneIndexThreadTable = OneIndexContext.GetTable<GameScores>();
+            TwoIndexThreadTable = TwoIndexContext.GetTable<GameScores>();
         }
 
 
@@ -237,16 +237,16 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
             // getting information about what type of operation was used from log
             if (msg.Contains("DynamoDb query:"))
             {
-                this._queryOperationUsed = true;
+                _queryOperationUsed = true;
             }
             if (msg.Contains("DynamoDb index query:"))
             {
-                this._indexQueryOperationUsed = true;
+                _indexQueryOperationUsed = true;
 
                 int indexNamePos = msg.IndexOf("Index name: ", StringComparison.InvariantCulture);
                 if (indexNamePos >= 0)
                 {
-                    this._indexNameUsed = msg.Substring(indexNamePos + 12);
+                    _indexNameUsed = msg.Substring(indexNamePos + 12);
                 }
             }
         }
@@ -255,9 +255,9 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
         {
             try
             {
-                await this.NoIndexContext.DeleteTableAsync<GameScores>();
-                await this.OneIndexContext.DeleteTableAsync<GameScores>();
-                await this.TwoIndexContext.DeleteTableAsync<GameScores>();
+                await NoIndexContext.DeleteTableAsync<GameScores>();
+                await OneIndexContext.DeleteTableAsync<GameScores>();
+                await TwoIndexContext.DeleteTableAsync<GameScores>();
             }
             catch (ResourceNotFoundException)
             {
@@ -267,38 +267,38 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
 
         private void TestAllThreeTables(Func<IQueryable<GameScores>, IQueryable<GameScores>> query, bool noIndexTableShouldBeQueried, bool oneIndexTableShouldBeQueried, string firstIndexName, string secondIndexName)
         {
-            var result1 = query(this.NoIndexThreadTable).ToArray();
-            Assert.AreEqual(noIndexTableShouldBeQueried, this._queryOperationUsed);
-            Assert.IsFalse(this._indexQueryOperationUsed);
+            var result1 = query(NoIndexThreadTable).ToArray();
+            Assert.AreEqual(noIndexTableShouldBeQueried, _queryOperationUsed);
+            Assert.IsFalse(_indexQueryOperationUsed);
 
-            this.ClearFlags();
+            ClearFlags();
 
-            var result2 = query(this.OneIndexThreadTable).ToArray();
+            var result2 = query(OneIndexThreadTable).ToArray();
             if (string.IsNullOrEmpty(firstIndexName))
             {
-                Assert.AreEqual(oneIndexTableShouldBeQueried, this._queryOperationUsed);
-                Assert.IsFalse(this._indexQueryOperationUsed);
+                Assert.AreEqual(oneIndexTableShouldBeQueried, _queryOperationUsed);
+                Assert.IsFalse(_indexQueryOperationUsed);
             }
             else
             {
-                Assert.IsFalse(this._queryOperationUsed);
-                Assert.IsTrue(this._indexQueryOperationUsed);
-                Assert.AreEqual(this._indexNameUsed, firstIndexName);
+                Assert.IsFalse(_queryOperationUsed);
+                Assert.IsTrue(_indexQueryOperationUsed);
+                Assert.AreEqual(_indexNameUsed, firstIndexName);
             }
 
-            this.ClearFlags();
+            ClearFlags();
 
-            var result3 = query(this.TwoIndexThreadTable).ToArray();
+            var result3 = query(TwoIndexThreadTable).ToArray();
             if (string.IsNullOrEmpty(secondIndexName))
             {
-                Assert.IsTrue(this._queryOperationUsed);
-                Assert.IsFalse(this._indexQueryOperationUsed);
+                Assert.IsTrue(_queryOperationUsed);
+                Assert.IsFalse(_indexQueryOperationUsed);
             }
             else
             {
-                Assert.IsFalse(this._queryOperationUsed);
-                Assert.IsTrue(this._indexQueryOperationUsed);
-                Assert.AreEqual(this._indexNameUsed, secondIndexName);
+                Assert.IsFalse(_queryOperationUsed);
+                Assert.IsTrue(_indexQueryOperationUsed);
+                Assert.AreEqual(_indexNameUsed, secondIndexName);
             }
 
             Assert.IsTrue(result1.IsEqualTo(result2));
@@ -308,31 +308,31 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
         [Test]
         public void DataContext_QueryByHashReturnsEqualResults()
         {
-            this.TestAllThreeTables(GameScoresQueries.QueryByHashKey, true, true, string.Empty, string.Empty);
+            TestAllThreeTables(GameScoresQueries.QueryByHashKey, true, true, string.Empty, string.Empty);
         }
 
         [Test]
         public void DataContext_QueryByWinsReturnsEqualResults()
         {
-            this.TestAllThreeTables(GameScoresQueries.QueryByWins, false, false, string.Empty, "WinsIndex");
+            TestAllThreeTables(GameScoresQueries.QueryByWins, false, false, string.Empty, "WinsIndex");
         }
 
         [Test]
         public void DataContext_QueryByGameTitleAndTopScore1ReturnsEqualResults()
         {
-            this.TestAllThreeTables(GameScoresQueries.QueryByGameTitleAndTopScore1, false, true, "GameTitleTopScoreIndex", "GameTitleTopScoreIndex");
+            TestAllThreeTables(GameScoresQueries.QueryByGameTitleAndTopScore1, false, true, "GameTitleTopScoreIndex", "GameTitleTopScoreIndex");
         }
 
         [Test]
         public void DataContext_QueryByGameTitleAndTopScore2ReturnsEqualResults()
         {
-            this.TestAllThreeTables(GameScoresQueries.QueryByGameTitleAndTopScore2, false, true, "GameTitleTopScoreIndex", "GameTitleTopScoreIndex");
+            TestAllThreeTables(GameScoresQueries.QueryByGameTitleAndTopScore2, false, true, "GameTitleTopScoreIndex", "GameTitleTopScoreIndex");
         }
 
         [Test]
         public void DataContext_QueryByGameTitleReturnsEqualResults()
         {
-            this.TestAllThreeTables(GameScoresQueries.QueryByGameTitle, false, true, "GameTitleTopScoreIndex", "GameTitleTopScoreIndex");
+            TestAllThreeTables(GameScoresQueries.QueryByGameTitle, false, true, "GameTitleTopScoreIndex", "GameTitleTopScoreIndex");
         }
 
         [Test]
@@ -343,15 +343,15 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
                 UserId = "Unknown",
                 GameTitle = "DataContext_EntitiesLoadedBySecondaryIndexCanBeModified",
             };
-            if (!this.OneIndexThreadTable.Any(scores => scores.GameTitle == testScore.GameTitle))
+            if (!OneIndexThreadTable.Any(scores => scores.GameTitle == testScore.GameTitle))
             {
-                this.OneIndexThreadTable.InsertOnSubmit(testScore);
-                this.OneIndexContext.SubmitChanges();
+                OneIndexThreadTable.InsertOnSubmit(testScore);
+                OneIndexContext.SubmitChanges();
             }
 
-            var entity = this.OneIndexThreadTable.First(scores => scores.GameTitle == testScore.GameTitle);
+            var entity = OneIndexThreadTable.First(scores => scores.GameTitle == testScore.GameTitle);
             entity.TopScore = 123;
-            this.OneIndexContext.SubmitChanges();
+            OneIndexContext.SubmitChanges();
         }
 
         [Test]
@@ -362,15 +362,15 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
                 UserId = "Unknown",
                 GameTitle = "DataContext_EntitiesLoadedBySecondaryIndexCanBeDeleted",
             };
-            if (!this.OneIndexThreadTable.Any(scores => scores.GameTitle == testScore.GameTitle))
+            if (!OneIndexThreadTable.Any(scores => scores.GameTitle == testScore.GameTitle))
             {
-                this.OneIndexThreadTable.InsertOnSubmit(testScore);
-                this.OneIndexContext.SubmitChanges();
+                OneIndexThreadTable.InsertOnSubmit(testScore);
+                OneIndexContext.SubmitChanges();
             }
 
-            var entity = this.OneIndexThreadTable.First(scores => scores.GameTitle == testScore.GameTitle);
-            this.OneIndexThreadTable.RemoveOnSubmit(entity);
-            this.OneIndexContext.SubmitChanges();
+            var entity = OneIndexThreadTable.First(scores => scores.GameTitle == testScore.GameTitle);
+            OneIndexThreadTable.RemoveOnSubmit(entity);
+            OneIndexContext.SubmitChanges();
         }
     }
 }

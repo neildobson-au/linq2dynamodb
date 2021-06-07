@@ -85,7 +85,7 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers
 			return book;
 		}
 
-		public static async Task CreateBooksTableAsync(string tableName)
+		private static async Task CreateBooksTableAsync(string tableName)
 		{
 			try
 			{
@@ -96,15 +96,15 @@ namespace Linq2DynamoDb.DataContext.Tests.Helpers
 						AttributeDefinitions =
 							new List<AttributeDefinition>
 							{
-								new AttributeDefinition { AttributeName = "Name", AttributeType = "S" },
-								new AttributeDefinition { AttributeName = "PublishYear", AttributeType = "N" }
+								new() { AttributeName = "Name", AttributeType = "S" },
+								new() { AttributeName = "PublishYear", AttributeType = "N" }
 							},
 						ProvisionedThroughput = new ProvisionedThroughput { ReadCapacityUnits = 5, WriteCapacityUnits = 5 },
 						KeySchema =
 							new List<KeySchemaElement>
 							{
-								new KeySchemaElement { AttributeName = "Name", KeyType = "HASH" },
-								new KeySchemaElement { AttributeName = "PublishYear", KeyType = "RANGE" }
+								new() { AttributeName = "Name", KeyType = "HASH" },
+								new() { AttributeName = "PublishYear", KeyType = "RANGE" }
 							}
 					});
 

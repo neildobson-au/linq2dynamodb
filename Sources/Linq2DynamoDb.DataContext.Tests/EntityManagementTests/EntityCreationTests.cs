@@ -14,7 +14,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
     {
         public override void SetUp()
         {
-            this.Context = TestConfiguration.GetDataContext();
+            Context = TestConfiguration.GetDataContext();
         }
 
         public override Task TearDown()
@@ -27,9 +27,9 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(persistToDynamoDb: false);
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.IsNotNull(storedBook);
@@ -44,9 +44,9 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
 
             book.PopularityRating = Book.Popularity.High;
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
         }
 
         [Test]
@@ -54,15 +54,15 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             book.PopularityRating = Book.Popularity.High;
 
             booksTable.InsertOnSubmit(book);
 
-            (await Should.ThrowAsync<InvalidOperationException>(() => this.Context.SubmitChangesAsync())).Message.ShouldContain(
+            (await Should.ThrowAsync<InvalidOperationException>(() => Context.SubmitChangesAsync())).Message.ShouldContain(
                 "cannot be added, because entity with that key already exists"
             );
         }
@@ -72,14 +72,14 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average);
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             await booksTable.FindAsync(book.Name, book.PublishYear);
 
             book.PopularityRating = Book.Popularity.High;
 
             booksTable.InsertOnSubmit(book);
 
-            (await Should.ThrowAsync<InvalidOperationException>(() => this.Context.SubmitChangesAsync())).Message.ShouldContain(
+            (await Should.ThrowAsync<InvalidOperationException>(() => Context.SubmitChangesAsync())).Message.ShouldContain(
                 "cannot be added, because entity with that key already exists"
             );
         }
@@ -89,16 +89,16 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(persistToDynamoDb: false, publisher: new Book.PublisherDto { Title = "O’Reilly Media", Address = "Sebastopol, CA" });
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.Publisher.ToString(), storedBook.Publisher.ToString(), "Complex object properties are not equal");
 
             storedBook.Publisher = new Book.PublisherDto { Title = "O’Reilly Media", Address = "Illoqortormiut, Greenland" };
 
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBook2 = await booksTable.FindAsync(book.Name, book.PublishYear);
 
@@ -111,9 +111,9 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(persistToDynamoDb: false, reviews: new List<Book.ReviewDto> { new Book.ReviewDto { Author = "Beavis", Text = "Cool" }, new Book.ReviewDto { Author = "Butt-head", Text = "This sucks!" } });
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
 

@@ -9,7 +9,7 @@ namespace Linq2DynamoDb.DataContext.Tests.NonCachingTests
     {
         public override void SetUp()
         {
-            this.Context = TestConfiguration.GetDataContext();
+            Context = TestConfiguration.GetDataContext();
         }
 
         public override Task TearDown()

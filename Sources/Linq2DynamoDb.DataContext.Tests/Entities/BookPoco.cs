@@ -80,8 +80,8 @@ namespace Linq2DynamoDb.DataContext.Tests.Entities {
 
                 var dictionary = (IDictionary<string, TimeSpan>)value;
                 var primitiveList = new PrimitiveList(DynamoDBEntryType.String);
-                foreach (var keyValuePair in dictionary) {
-                    primitiveList.Add(new Primitive(string.Format("{0}@{1}", keyValuePair.Key, keyValuePair.Value)));
+                foreach (var (key, timeSpan) in dictionary) {
+                    primitiveList.Add(new Primitive($"{key}@{timeSpan}"));
                 }
 
                 return primitiveList;

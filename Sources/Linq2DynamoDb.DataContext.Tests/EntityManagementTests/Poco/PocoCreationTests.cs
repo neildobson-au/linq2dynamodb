@@ -14,7 +14,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
     {
         public override void SetUp()
         {
-            this.Context = TestConfiguration.GetDataContext();
+            Context = TestConfiguration.GetDataContext();
         }
 
         public override Task TearDown()
@@ -27,9 +27,9 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(persistToDynamoDb: false);
 
-            var booksTable = this.Context.GetTable<BookPoco>();
+            var booksTable = Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.IsNotNull(storedBookPoco);
@@ -44,9 +44,9 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
 
             book.PopularityRating = BookPoco.Popularity.High;
 
-            var booksTable = this.Context.GetTable<BookPoco>();
+            var booksTable = Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
         }
 
         [Test]
@@ -54,15 +54,15 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average, persistToDynamoDb: false);
 
-            var booksTable = this.Context.GetTable<BookPoco>();
+            var booksTable = Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             book.PopularityRating = BookPoco.Popularity.High;
 
             booksTable.InsertOnSubmit(book);
 
-            (await Should.ThrowAsync<InvalidOperationException>(() => this.Context.SubmitChangesAsync())).Message.ShouldContain(
+            (await Should.ThrowAsync<InvalidOperationException>(() => Context.SubmitChangesAsync())).Message.ShouldContain(
                 "cannot be added, because entity with that key already exists"
             );
         }
@@ -72,14 +72,14 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average);
 
-            var booksTable = this.Context.GetTable<BookPoco>();
+            var booksTable = Context.GetTable<BookPoco>();
             await booksTable.FindAsync(book.Name, book.PublishYear);
 
             book.PopularityRating = BookPoco.Popularity.High;
 
             booksTable.InsertOnSubmit(book);
 
-            (await Should.ThrowAsync<InvalidOperationException>(() => this.Context.SubmitChangesAsync())).Message.ShouldContain(
+            (await Should.ThrowAsync<InvalidOperationException>(() => Context.SubmitChangesAsync())).Message.ShouldContain(
                 "cannot be added, because entity with that key already exists"
             );
         }
@@ -89,18 +89,18 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(persistToDynamoDb: false, publisher: new BookPoco.PublisherDto { Title = "O’Reilly Media", Address = "Sebastopol, CA" });
 
-            var booksTable = this.Context.GetTable<BookPoco>();
+            var booksTable = Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
-            var storedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.Publisher.ToString(), storedBookPoco.Publisher.ToString(), "Complex object properties are not equal");
 
             storedBookPoco.Publisher = new BookPoco.PublisherDto { Title = "O’Reilly Media", Address = "Illoqortormiut, Greenland" };
 
-            this.Context.SubmitChanges();
+            await Context.SubmitChangesAsync();
 
-            var storedBookPoco2 = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco2 = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             Assert.AreEqual(storedBookPoco2.Publisher.ToString(), storedBookPoco.Publisher.ToString(), "Complex object properties are not equal after updating");
         }
@@ -111,11 +111,11 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(persistToDynamoDb: false, reviews: new List<BookPoco.ReviewDto> { new BookPoco.ReviewDto { Author = "Beavis", Text = "Cool" }, new BookPoco.ReviewDto { Author = "Butt-head", Text = "This sucks!" } });
 
-            var booksTable = this.Context.GetTable<BookPoco>();
+            var booksTable = Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
-            var storedBookPoco = booksTable.Find(book.Name, book.PublishYear);
+            var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             var expectedSequence1 = string.Join(", ", book.ReviewsList.Select(r => r.ToString()).OrderBy(s => s));
             var actualSequence1 = string.Join(", ", storedBookPoco.ReviewsList.Select(r => r.ToString()).OrderBy(s => s));

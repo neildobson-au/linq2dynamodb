@@ -12,7 +12,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
     {
         public override void SetUp()
         {
-            this.Context = TestConfiguration.GetDataContext();
+            Context = TestConfiguration.GetDataContext();
         }
 
         public override Task TearDown()
@@ -47,12 +47,12 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             book.PopularityRating = Book.Popularity.High;
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBook.PopularityRating, "Record was not updated");
@@ -62,14 +62,14 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         public async Task DataContext_EntityModification_UpdateRecordWithNewArray() 
         {
             var book = await BooksHelper.CreateBookAsync(rentingHistory: null, persistToDynamoDb: false);
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBook.RentingHistory = new List<string>() { "non-empty array" };
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBookAfterModification = await booksTable.FindAsync(book.Name, book.PublishYear);
             
@@ -82,15 +82,15 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average, persistToDynamoDb: false);
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             booksTable.InsertOnSubmit(book);
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             // Update record from outside of DataTable
             await BooksHelper.CreateBookAsync(book.Name, book.PublishYear, numPages: 15);
 
             book.PopularityRating = Book.Popularity.High;
-            await this.Context.SubmitChangesAsync();
+            await Context.SubmitChangesAsync();
 
             var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBook.PopularityRating, "Record was not updated");
@@ -102,7 +102,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average);
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
 
             book.PopularityRating = Book.Popularity.High;
             ((ITableCudOperations)booksTable).UpdateEntity(book, null);
@@ -116,7 +116,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests
         {
             var book = await BooksHelper.CreateBookAsync(popularityRating: Book.Popularity.Average);
 
-            var booksTable = this.Context.GetTable<Book>();
+            var booksTable = Context.GetTable<Book>();
             var storedBook = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBook.PopularityRating = Book.Popularity.High;
