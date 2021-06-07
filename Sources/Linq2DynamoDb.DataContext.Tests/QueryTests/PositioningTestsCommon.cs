@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Linq2DynamoDb.DataContext.Tests.Entities;
 using Linq2DynamoDb.DataContext.Tests.Helpers;
 using NUnit.Framework;
+using Shouldly;
 
 namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 {
@@ -118,8 +120,7 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 			var bookTable = Context.GetTable<Book>();
 			var booksQuery = from record in bookTable where record.Name == bookRev1.Name select record;
 
-			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-			booksQuery.ElementAt(5);
+			Should.Throw<ArgumentOutOfRangeException>(() => booksQuery.ElementAt(5));
 		}
 
 		[Test]
