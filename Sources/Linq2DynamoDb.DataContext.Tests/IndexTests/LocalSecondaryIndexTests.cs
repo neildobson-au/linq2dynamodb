@@ -138,7 +138,7 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
         }
 
 
-        private static bool IsEqualTo(this ForumThread thisThread, ForumThread thatThread)
+        public static bool IsEqualTo(this ForumThread thisThread, ForumThread thatThread)
         {
             return
                 thisThread.ForumName == thatThread.ForumName
@@ -196,9 +196,9 @@ namespace Linq2DynamoDb.DataContext.Tests.IndexTests
 
         public override void SetUp()
         {
-            var noIndexTablePrefix = nameof(LocalSecondaryIndexTests) + Guid.NewGuid();
-			var oneIndexTablePrefix = nameof(LocalSecondaryIndexTests) + Guid.NewGuid();
-            var twoIndexTablePrefix = nameof(LocalSecondaryIndexTests) + Guid.NewGuid();
+            var noIndexTablePrefix = typeof(LocalSecondaryIndexTests).Name + Guid.NewGuid();
+			var oneIndexTablePrefix = typeof(LocalSecondaryIndexTests).Name + Guid.NewGuid();
+            var twoIndexTablePrefix = typeof(LocalSecondaryIndexTests).Name + Guid.NewGuid();
 
 			this.ClearFlags();
             

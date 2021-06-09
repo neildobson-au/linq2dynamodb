@@ -11,7 +11,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
     {
         public override void SetUp()
         {
-           Context = TestConfiguration.GetDataContext();
+            this.Context = TestConfiguration.GetDataContext();
         }
 
         public override Task TearDown()
@@ -24,12 +24,12 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average, persistToDynamoDb: false);
 
-            var booksTable =Context.GetTable<BookPoco>();
+            var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
 
             book.PopularityRating = BookPoco.Popularity.High;
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
 
             var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBookPoco.PopularityRating, "Record was not updated");
@@ -39,14 +39,14 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         public async Task DataContext_EntityModification_UpdateRecordWithNewArray()
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(rentingHistory: null, persistToDynamoDb: false);
-            var booksTable =Context.GetTable<BookPoco>();
+            var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
 
             var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBookPoco.RentingHistory = new List<string>() { "non-empty array" };
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
 
             var storedBookPocoAfterModification = await booksTable.FindAsync(book.Name, book.PublishYear);
 
@@ -59,15 +59,15 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average, persistToDynamoDb: false);
 
-            var booksTable =Context.GetTable<BookPoco>();
+            var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.InsertOnSubmit(book);
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
 
             // Update record from outside of DataTable
             await BookPocosHelper.CreateBookPocoAsync(book.Name, book.PublishYear, numPages: 15);
 
             book.PopularityRating = BookPoco.Popularity.High;
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
 
             var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
             Assert.AreEqual(book.PopularityRating, storedBookPoco.PopularityRating, "Record was not updated");
@@ -79,7 +79,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average);
 
-            var booksTable =Context.GetTable<BookPoco>();
+            var booksTable = this.Context.GetTable<BookPoco>();
 
             book.PopularityRating = BookPoco.Popularity.High;
             ((ITableCudOperations)booksTable).UpdateEntity(book, null);
@@ -93,7 +93,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(popularityRating: BookPoco.Popularity.Average);
 
-            var booksTable =Context.GetTable<BookPoco>();
+            var booksTable = this.Context.GetTable<BookPoco>();
             var storedBookPoco = await booksTable.FindAsync(book.Name, book.PublishYear);
 
             storedBookPoco.PopularityRating = BookPoco.Popularity.High;

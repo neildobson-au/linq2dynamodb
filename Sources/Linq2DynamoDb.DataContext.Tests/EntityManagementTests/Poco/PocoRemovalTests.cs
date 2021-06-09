@@ -11,7 +11,7 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
     {
         public override void SetUp()
         {
-            Context = TestConfiguration.GetDataContext();
+            this.Context = TestConfiguration.GetDataContext();
         }
 
         public override Task TearDown()
@@ -24,9 +24,9 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync();
 
-            var booksTable = Context.GetTable<BookPoco>();
+            var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.RemoveOnSubmit(book);
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
 
             var storedBookPocosCount = booksTable.Count(storedBookPoco => storedBookPoco.Name == book.Name);
             Assert.AreEqual(0, storedBookPocosCount, "Record was not deleted");
@@ -37,9 +37,9 @@ namespace Linq2DynamoDb.DataContext.Tests.EntityManagementTests.Poco
         {
             var book = await BookPocosHelper.CreateBookPocoAsync(persistToDynamoDb: false);
 
-            var booksTable = Context.GetTable<BookPoco>();
+            var booksTable = this.Context.GetTable<BookPoco>();
             booksTable.RemoveOnSubmit(book);
-            await Context.SubmitChangesAsync();
+            await this.Context.SubmitChangesAsync();
         }
     }
 }

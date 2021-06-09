@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linq2DynamoDb.DataContext", "Sources\Linq2DynamoDb.DataContext\Linq2DynamoDb.DataContext.csproj", "{24324F9E-921F-4B59-89F5-F3136C58DAF9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linq2DynamoDb.DataContext", "Linq2DynamoDb.DataContext\Linq2DynamoDb.DataContext.csproj", "{24324F9E-921F-4B59-89F5-F3136C58DAF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linq2DynamoDb.DataContext.Tests", "Sources\Linq2DynamoDb.DataContext.Tests\Linq2DynamoDb.DataContext.Tests.csproj", "{649BE92E-A50F-46E0-AADF-B40BA3D32D52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linq2DynamoDb.DataContext.Tests", "Linq2DynamoDb.DataContext.Tests\Linq2DynamoDb.DataContext.Tests.csproj", "{649BE92E-A50F-46E0-AADF-B40BA3D32D52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

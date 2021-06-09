@@ -56,10 +56,10 @@ namespace Linq2DynamoDb.DataContext.Tests.QueryTests
 
 			Assert.AreEqual(1, queryList.Count);
 
-			var (key, value) = queryList.First();
+			var storedBook = queryList.First();
 
-			Assert.AreEqual(book.Name, key.Name);
-			Assert.AreEqual(0, value);
+			Assert.AreEqual(book.Name, storedBook.Key.Name);
+			Assert.AreEqual(0, storedBook.Value);
 		}
 
 		// ReSharper restore InconsistentNaming

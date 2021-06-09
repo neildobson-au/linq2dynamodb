@@ -8,7 +8,7 @@ namespace Linq2DynamoDb.DataContext.Tests.Entities
 {
 	public class BooksComparer : IEqualityComparer<Book>
 	{
-		private static readonly Func<object, Document> ToDocumentConverter = DynamoDbConversionUtils.ToDocumentConverter(typeof(Book));
+        protected static readonly Func<object, Document> ToDocumentConverter = DynamoDbConversionUtils.ToDocumentConverter(typeof(Entities.Book));
 
 		public bool Equals(Book x, Book y)
 		{

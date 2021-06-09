@@ -15,13 +15,16 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
     {
         private string TablePrefix { get; set; }
 
-        private string BooksTableName => TablePrefix + nameof(Book);
+        private string BooksTableName
+        {
+            get { return TablePrefix + typeof(Book).Name; }
+        }
 
         private IAmazonDynamoDB DynamoDbClient { get; set; }
 
         public override void SetUp()
         {
-            TablePrefix = nameof(TableManagementTests) + Guid.NewGuid();
+            TablePrefix = typeof(TableManagementTests).Name + Guid.NewGuid();
 
             DynamoDbClient = TestConfiguration.GetDynamoDbClient();
             Context = TestConfiguration.GetDataContext(DynamoDbClient, TablePrefix);
@@ -201,9 +204,9 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
         public async Task CreatesTableWithRuntimeVariableCapacity()
         {
             // arrange
-            static long GetReadCapacityFunc() => 2;
-            static long GetWriteCapacityFunc() => 1;
-            var args = new CreateTableArgs<Book>(GetReadCapacityFunc(), GetWriteCapacityFunc(), book => book.Name, book => book.PublishYear);
+            Func<long> getReadCapacityFunc = () => 2;
+            Func<long> getWriteCapacityFunc = () => 1;
+            var args = new CreateTableArgs<Book>(getReadCapacityFunc(), getWriteCapacityFunc(), book => book.Name, book => book.PublishYear);
 
             // act
             await Context.CreateTableIfNotExistsAsync(args);
@@ -212,8 +215,8 @@ namespace Linq2DynamoDb.DataContext.Tests.UtilityTests
             // assert
             Assert.IsNotNull(tableData, "Table was not created");
             var tableCapacity = tableData.Table.ProvisionedThroughput;
-            Assert.AreEqual(GetReadCapacityFunc(), tableCapacity.ReadCapacityUnits);
-            Assert.AreEqual(GetWriteCapacityFunc(), tableCapacity.WriteCapacityUnits);
+            Assert.AreEqual(getReadCapacityFunc(), tableCapacity.ReadCapacityUnits);
+            Assert.AreEqual(getWriteCapacityFunc(), tableCapacity.WriteCapacityUnits);
         }
 
         [Test]

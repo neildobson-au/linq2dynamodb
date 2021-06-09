@@ -28,7 +28,7 @@ namespace Linq2DynamoDb.DataContext.Tests
 
 	    public static DynamoDBContext GetDynamoDbContext(IAmazonDynamoDB dynamoDbClient)
 	    {
-	        return new(dynamoDbClient, new DynamoDBContextConfig { TableNamePrefix = TablePrefix });
+	        return new DynamoDBContext(dynamoDbClient, new DynamoDBContextConfig { TableNamePrefix = TablePrefix });
 	    }
 
 	    public static DataContext GetDataContext()
