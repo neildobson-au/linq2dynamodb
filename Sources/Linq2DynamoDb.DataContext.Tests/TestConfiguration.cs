@@ -10,6 +10,8 @@ namespace Linq2DynamoDb.DataContext.Tests
 	{
 		public static readonly string TablePrefix = "";
 
+        public static readonly string RedisLocalAddress = "localhost:6379";
+
         private static readonly ILog DataContextLogger = LogManager.GetLogger(typeof(DataContext));
 
         public static IAmazonDynamoDB GetDynamoDbClient() => new AmazonDynamoDBClient(

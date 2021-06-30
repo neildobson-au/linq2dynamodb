@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Linq2DynamoDb.DataContext.Caching.Redis\Linq2DynamoDb.DataContext.Caching.Redis.csproj" />
     <ProjectReference Include="..\Linq2DynamoDb.DataContext\Linq2DynamoDb.DataContext.csproj" />
   </ItemGroup>
 
