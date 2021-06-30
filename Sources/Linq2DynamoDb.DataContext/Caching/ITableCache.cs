@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DocumentModel;
 
 namespace Linq2DynamoDb.DataContext.Caching
@@ -17,7 +18,7 @@ namespace Linq2DynamoDb.DataContext.Caching
         /// <summary>
         /// Tries to get a single entity from cache by it's key
         /// </summary>
-        Document GetSingleEntity(EntityKey entityKey);
+        Task<Document> GetSingleEntity(EntityKey entityKey);
 
         /// <summary>
         /// Tries to find a saved index for the passed conditions and return documents from that index 
